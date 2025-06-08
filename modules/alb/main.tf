@@ -21,11 +21,11 @@ resource "aws_lb_target_group" "backend_target_group" {
   deregistration_delay = 30
 
   health_check {
-    path                = "/api/v1/health/app"
+    path                = "/api/v1/health"
     protocol            = "HTTP"
     port                = "traffic-port"
-    timeout             = 60
-    interval            = 90
+    timeout             = 120
+    interval            = 200
     unhealthy_threshold = 2
     healthy_threshold   = 2
     matcher             = "200-499"
@@ -84,7 +84,7 @@ resource "aws_lb_listener_rule" "backend_admin_rule" {
   condition {
 
     path_pattern {
-      values = ["/admin4f2949a30501cc596f52a72de/admin/*"]
+      values = ["/admin4f2949a30501cc596f52a72de/*"]
     }
   }
 }

@@ -324,8 +324,8 @@ data "aws_ami" "amazon_linux_2" {
 
 resource "aws_launch_template" "ecs-launch-template" {
   name     = "${var.environment}-${var.project}_ec2launchtemplate"
-  image_id = data.aws_ami.amazon_linux_2.id
-  # image_id               = "ami-07adf0ef1a2222084"
+  # image_id = data.aws_ami.amazon_linux_2.id
+  image_id               = "ami-0ec41e6b86e7e8b9d"
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.pfc_ecs_key.key_name
   user_data              = filebase64("${path.module}/user_data.sh")
@@ -511,7 +511,7 @@ resource "aws_ecs_task_definition" "django_task" {
       }
     ],
     environment = [
-      { name = "REDIS_URL", value = var.elasticache_address }
+      { name = "REDIS_HOST", value = var.elasticache_address }
     ],
     },
     ## CELERY WORKER CONTIANER
@@ -520,7 +520,7 @@ resource "aws_ecs_task_definition" "django_task" {
       image     = "${var.django_ecr_url}:latest",
       essential = true,
       command   = ["/start-celeryworker"],
-      memory    = 512,
+      memory    = 256,
       logConfiguration = {
         logDriver = "awslogs",
         options = {
