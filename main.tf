@@ -49,3 +49,10 @@ module "ecs" {
   django_target_group_arn = module.alb.django_target_group_arn
   celery_log_group_name   = module.cloudwatch.celery_log_group_name
 }
+
+modeule "networking" {
+  source = "./modules/networking"
+  environment = var.environment
+  project_name = var.project
+  vpc_id = var.vpc_id
+}

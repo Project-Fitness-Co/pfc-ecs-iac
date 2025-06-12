@@ -71,21 +71,3 @@ resource "aws_lb_listener_rule" "backend_rule" {
 
 }
 
-## Routing for django admin
-resource "aws_lb_listener_rule" "backend_admin_rule" {
-  listener_arn = aws_lb_listener.lb_listener.arn
-  priority     = 92
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.backend_target_group.arn
-  }
-
-  condition {
-
-    path_pattern {
-      values = ["/admin4f2949a30501cc596f52a72de/*"]
-    }
-  }
-}
-

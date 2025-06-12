@@ -94,7 +94,7 @@ resource "aws_security_group" "pfc-cluster-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow inbound HTTPS traffic
+  # Allow inbound Django traffic
   ingress {
     description = "Allow inbound Django traffic"
     from_port   = 5000
@@ -102,6 +102,7 @@ resource "aws_security_group" "pfc-cluster-sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -117,6 +118,7 @@ resource "aws_security_group" "ec2" {
   description = "Security group for EC2 instances in ECS cluster"
   vpc_id      = var.vpc_id
 
+  # Allow inbound SSH traffic from anywhere
   ingress {
     description = "Allow SSH ingress traffic"
     from_port   = 22
@@ -124,6 +126,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound HTTPS traffic from anywhere
   ingress {
     description = "Allow HTTPS ingress traffic"
     from_port   = 443
@@ -131,6 +135,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound Django traffic from anywhere
   ingress {
     description = "Allow Django ingress traffic"
     from_port   = 5000
@@ -138,6 +144,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound Postgres traffic from anywhere
   ingress {
     description = "Allow RDS ingress traffic"
     from_port   = 5432
@@ -145,6 +153,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound Pgbouncer traffic from anywhere
   ingress {
     description = "Allow pgbouncer ingress traffic"
     from_port   = 6432
@@ -152,6 +162,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound NFS traffic
   ingress {
     description = "Allow NFS traffic"
     from_port   = 2049
@@ -159,6 +171,8 @@ resource "aws_security_group" "ec2" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Allow inbound HTTP traffic from anywhere
   ingress {
     description = "Allow ingress from http"
     from_port   = 80
@@ -168,6 +182,7 @@ resource "aws_security_group" "ec2" {
     # security_groups = [var.rds_security_group_id]
   }
 
+  # Allow all outbound traffic
   egress {
     description = "Allow all egress traffic"
     from_port   = 0
