@@ -288,16 +288,16 @@ resource "aws_key_pair" "pfc_ecs_key" {
 }
 
 # Write the private key to a local file
-resource "local_file" "private_key" {
-  content  = tls_private_key.pfc_ecs_key.private_key_pem
-  filename = "${path.module}/pfc_ecs_private_key.pem"
-}
+# resource "local_file" "private_key" {
+#   content  = tls_private_key.pfc_ecs_key.private_key_pem
+#   filename = "${path.module}/pfc_ecs_private_key.pem"
+# }
 
-# Write the public key to a local file
-resource "local_file" "public_key" {
-  content  = tls_private_key.pfc_ecs_key.public_key_openssh
-  filename = "${path.module}/pfc_ecs_public_key.pub"
-}
+# # Write the public key to a local file
+# resource "local_file" "public_key" {
+#   content  = tls_private_key.pfc_ecs_key.public_key_openssh
+#   filename = "${path.module}/pfc_ecs_public_key.pub"
+# }
 
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
@@ -580,9 +580,8 @@ resource "aws_ecs_service" "django_service" {
   launch_type     = "EC2"
 
   network_configuration {
-    subnets         = var.public_subnets_id
+    subnets         = var.private_subnet_ids
     security_groups = [aws_security_group.pfc-cluster-sg.id]
-    #assign_public_ip = true
   }
 
   load_balancer {

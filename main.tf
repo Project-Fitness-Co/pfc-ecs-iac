@@ -36,6 +36,14 @@ module "storage" {
   redis_port           = var.redis_port
 }
 
+module "networking" {
+  source            = "./modules/networking"
+  environment       = var.environment
+  project           = var.project
+  vpc_id            = var.vpc_id
+  public_subnets_id = data.aws_subnets.public.ids
+}
+
 module "ecs" {
   source                  = "./modules/ecs"
   environment             = var.environment
@@ -45,6 +53,7 @@ module "ecs" {
   aws_region              = var.aws_region
   vpc_id                  = var.vpc_id
   public_subnets_id       = data.aws_subnets.public.ids
+  private_subnet_ids      = module.networking.private_subnet_ids
   django_log_group_name   = module.cloudwatch.django_log_group_name
   django_target_group_arn = module.alb.django_target_group_arn
   celery_log_group_name   = module.cloudwatch.celery_log_group_name

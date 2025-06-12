@@ -43,3 +43,8 @@ variable "celery_log_group_name" {
 variable "django_target_group_arn" {
   description = "ARN for backend target group"
 }
+
+variable "private_subnet_ids" {
+  description = "List of private subnet IDs from networking module"
+  type        = list(string)
+}

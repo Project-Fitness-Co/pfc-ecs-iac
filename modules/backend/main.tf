@@ -92,17 +92,17 @@ resource "aws_s3_bucket_public_access_block" "tfstate" {
   restrict_public_buckets = true
 }
 
-resource "local_file" "key" {
-  filename = "backend.tf"
-  content  = <<EOF
-terraform {
-  backend "s3" {
-    bucket         = "${aws_s3_bucket.tfstate.id}"
-    key            = "terraform.tfstate"
-    region         = "${var.region}"
-    encrypt        = true
-    use_lockfile   = true
-  }
-}
-  EOF
-}
+# resource "local_file" "key" {
+#   filename = "backend.tf"
+#   content  = <<EOF
+# terraform {
+#   backend "s3" {
+#     bucket         = "${aws_s3_bucket.tfstate.id}"
+#     key            = "terraform.tfstate"
+#     region         = "${var.region}"
+#     encrypt        = true
+#     use_lockfile   = true
+#   }
+# }
+#   EOF
+# }
