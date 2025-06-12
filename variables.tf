@@ -98,3 +98,7 @@ variable "redis_instance_class" {
   description = "The redis instance type"
   default     = "cache.t3.small"
 }
+
+variable "route_table_id" {
+  description = "Route table id for private subnets"
+}
