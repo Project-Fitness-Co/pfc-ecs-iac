@@ -323,12 +323,15 @@ data "aws_ami" "amazon_linux_2" {
 # Launch template for all EC2 instances in ECS cluster
 
 resource "aws_launch_template" "ecs-launch-template" {
-  name     = "${var.environment}-${var.project}_ec2launchtemplate"
+  name = "${var.environment}-${var.project}_ec2launchtemplate"
   # image_id = data.aws_ami.amazon_linux_2.id
-  image_id               = "ami-0ec41e6b86e7e8b9d"
-  instance_type          = "t3.medium"
-  key_name               = aws_key_pair.pfc_ecs_key.key_name
-  user_data              = filebase64("${path.module}/user_data.sh")
+  image_id      = "ami-0ec41e6b86e7e8b9d"
+  instance_type = "t3.medium"
+  key_name      = aws_key_pair.pfc_ecs_key.key_name
+  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    ecs_cluster_name = aws_ecs_cluster.pfc-cluster.name
+    ssh_public_key   = aws_key_pair.pfc_ecs_key.public_key
+  }))
   vpc_security_group_ids = [aws_security_group.ec2.id] ## Security group for EC2 instances
 
   iam_instance_profile {
@@ -346,16 +349,6 @@ resource "aws_launch_template" "ecs-launch-template" {
 }
 
 
-
-data "template_file" "user_data" {
-  template = file("${path.module}/user_data.sh")
-
-  vars = {
-    ecs_cluster_name = aws_ecs_cluster.pfc-cluster.name
-    ssh_public_key   = aws_key_pair.pfc_ecs_key.public_key
-  }
-  depends_on = [aws_ecs_cluster.pfc-cluster]
-}
 
 # IAM
 # ------------------------------------------------------------------------------
