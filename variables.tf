@@ -99,6 +99,6 @@ variable "redis_instance_class" {
   default     = "cache.t3.small"
 }
 
-variable "route_table_id" {
-  description = "Route table id for private subnets"
-}
+# variable "route_table_id" {
+#   description = "Route table id for private subnets"
+# }

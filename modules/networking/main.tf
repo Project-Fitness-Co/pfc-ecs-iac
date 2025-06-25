@@ -19,7 +19,7 @@ resource "aws_subnet" "private" {
 # Elastic IP for NAT Gateway
 resource "aws_eip" "nat_gateway_eip" {
   domain = "vpc"
-  
+
   tags = {
     Name        = "${var.environment}-${var.project}-nat-eip"
     Environment = var.environment
@@ -31,25 +31,25 @@ resource "aws_eip" "nat_gateway_eip" {
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id     = var.public_subnets_id[0]
-  
+
   tags = {
     Name        = "${var.environment}-${var.project}-nat-gateway"
     Environment = var.environment
     Project     = var.project
   }
-  
+
   depends_on = [aws_eip.nat_gateway_eip]
 }
 
 # Private route table
 resource "aws_route_table" "private" {
   vpc_id = var.vpc_id
-  
+
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.main.id
   }
-  
+
   tags = {
     Name        = "${var.environment}-${var.project}-private-rt"
     Environment = var.environment
