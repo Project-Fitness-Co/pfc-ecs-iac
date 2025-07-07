@@ -38,6 +38,7 @@ resource "aws_s3_object" "django-secrets" {
   key    = "secrets/production-pfc-secrets.env"
   source = "./modules/ECS/.envs/production-pfc-djangosecrets.env"
   acl    = "private"
+  etag   = filemd5("./modules/ECS/.envs/production-pfc-djangosecrets.env")
   tags = {
     Environment = var.environment
     Project     = var.project
@@ -191,7 +192,7 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   health_check_type         = "EC2"
   protect_from_scale_in     = false
   health_check_grace_period = 90
-  desired_capacity          = 2
+  desired_capacity          = 3
   termination_policies      = ["OldestLaunchConfiguration"]
 
   enabled_metrics = [
@@ -487,7 +488,6 @@ resource "aws_ecs_task_definition" "django_task" {
     cpu       = 512,
     memory    = 1024,
 
-
     logConfiguration = {
       logDriver = "awslogs",
       options = {
@@ -503,17 +503,21 @@ resource "aws_ecs_task_definition" "django_task" {
         value = "arn:aws:s3:::${aws_s3_bucket.backend_secrets.id}/secrets/production-pfc-secrets.env"
       }
     ],
+
     environment = [
       { name = "REDIS_HOST", value = var.elasticache_address }
     ],
     },
+
     ## CELERY WORKER CONTIANER
     {
       name      = "celeryworker",
       image     = "${var.django_ecr_url}:latest",
       essential = true,
       command   = ["/start-celeryworker"],
-      memory    = 256,
+      cpu       = 512,
+      memory    = 512,
+
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -522,12 +526,14 @@ resource "aws_ecs_task_definition" "django_task" {
           "awslogs-stream-prefix" = "pfc-ecs"
         }
       },
+
       environmentFiles = [
         {
           type  = "s3",
           value = "arn:aws:s3:::${aws_s3_bucket.backend_secrets.id}/secrets/production-pfc-secrets.env"
         }
       ],
+
       environment = [
         { name = "REDIS_HOST", value = var.elasticache_address }
       ]
@@ -592,7 +598,7 @@ resource "aws_ecs_service" "django_service" {
     ignore_changes = [desired_count]
   }
 
-  desired_count                     = 2
+  desired_count                     = 3
   health_check_grace_period_seconds = 60
   depends_on                        = [aws_ecs_task_definition.django_task]
 }
