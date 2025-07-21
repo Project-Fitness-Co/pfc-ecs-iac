@@ -186,7 +186,7 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
 
   name                      = "${var.environment}-${var.project}-asg"
   max_size                  = 5
-  min_size                  = 1
+  min_size                  = 2
   vpc_zone_identifier       = var.public_subnets_id
   health_check_type         = "EC2"
   protect_from_scale_in     = false
