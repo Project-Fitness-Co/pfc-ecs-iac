@@ -513,7 +513,7 @@ resource "aws_ecs_task_definition" "django_task" {
       image     = "${var.django_ecr_url}:latest",
       essential = true,
       command   = ["/start-celeryworker"],
-      memory    = 256,
+      memory    = 512,
       logConfiguration = {
         logDriver = "awslogs",
         options = {
