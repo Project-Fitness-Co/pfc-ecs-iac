@@ -191,7 +191,7 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   health_check_type         = "EC2"
   protect_from_scale_in     = false
   health_check_grace_period = 90
-  desired_capacity          = 2
+  desired_capacity          = 3
   termination_policies      = ["OldestLaunchConfiguration"]
 
   enabled_metrics = [
