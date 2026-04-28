@@ -185,13 +185,13 @@ resource "aws_security_group" "ec2" {
 resource "aws_autoscaling_group" "ecs-autoscaling-group" {
 
   name                      = "${var.environment}-${var.project}-asg"
-  max_size                  = 5
+  max_size                  = 3
   min_size                  = 2
   vpc_zone_identifier       = var.public_subnets_id
   health_check_type         = "EC2"
   protect_from_scale_in     = false
   health_check_grace_period = 90
-  desired_capacity          = 3
+  desired_capacity          = 2
   termination_policies      = ["OldestLaunchConfiguration"]
 
   enabled_metrics = [
