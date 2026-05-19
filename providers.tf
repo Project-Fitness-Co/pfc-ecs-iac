@@ -33,10 +33,10 @@ provider "aws" {
 terraform {
   backend "s3" {
     #bucket         = "${aws_s3_bucket.tfstate.id}"
-    bucket         = "pfc-tfs"
-    key            = "terraform.tfstate"
-    region         = "ap-south-1"
-    encrypt        = true
-    use_lockfile   = true
+    bucket       = "pfc-tfs"
+    key          = "terraform.tfstate"
+    region       = "ap-south-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }
