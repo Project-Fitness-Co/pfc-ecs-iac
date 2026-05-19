@@ -34,10 +34,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backend_secrets_e
 
 ## Upload env text file to the created S3 bucket
 resource "aws_s3_object" "django-secrets" {
-  bucket = aws_s3_bucket.backend_secrets.id
-  key    = "secrets/production-pfc-secrets.env"
-  source = "./modules/ECS/.envs/production-pfc-djangosecrets.env"
-  acl    = "private"
+  bucket      = aws_s3_bucket.backend_secrets.id
+  key         = "secrets/production-pfc-secrets.env"
+  source      = "./modules/ECS/.envs/production-pfc-djangosecrets.env"
+  source_hash = filemd5("./modules/ECS/.envs/production-pfc-djangosecrets.env")
+  acl         = "private"
   tags = {
     Environment = var.environment
     Project     = var.project
