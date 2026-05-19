@@ -191,7 +191,7 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   health_check_type         = "EC2"
   protect_from_scale_in     = false
   health_check_grace_period = 90
-  desired_capacity          = 2
+  desired_capacity          = 3
   termination_policies      = ["OldestLaunchConfiguration"]
 
   enabled_metrics = [
@@ -484,8 +484,8 @@ resource "aws_ecs_task_definition" "django_task" {
     }],
     essential = true,
     command   = ["/start"],
-    cpu       = 512,
-    memory    = 1024,
+    cpu       = 1024,
+    memory    = 2048,
 
 
     logConfiguration = {
@@ -513,7 +513,8 @@ resource "aws_ecs_task_definition" "django_task" {
       image     = "${var.django_ecr_url}:latest",
       essential = true,
       command   = ["/start-celeryworker"],
-      memory    = 512,
+      cpu       = 512,
+      memory    = 1024,
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -538,6 +539,7 @@ resource "aws_ecs_task_definition" "django_task" {
       image     = "${var.django_ecr_url}:latest",
       essential = true,
       command   = ["/start-celerybeat"],
+      cpu       = 256,
       memory    = 256,
       # logConfiguration = {
       #   logDriver = "awslogs",
