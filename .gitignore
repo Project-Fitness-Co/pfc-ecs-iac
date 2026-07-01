@@ -11,6 +11,7 @@
 *.pem
 *.pub
 *.env
+pfc-ecs-keys.zip
 
 # .tfstate files
 *.tfstate
