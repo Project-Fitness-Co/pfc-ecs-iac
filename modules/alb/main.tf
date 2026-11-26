@@ -62,9 +62,15 @@ resource "aws_lb_listener_rule" "backend_rule" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.backend_target_group.arn
   }
+  # Forward only requests for our own API hostnames. Anything else (bots
+  # hitting the load balancer IP addresses or its raw DNS name) falls through
+  # to the listener default 403 instead of reaching Django as DisallowedHost
+  # errors. Keep this list equal to Django ALLOWED_HOSTS in pfc-api
+  # (config/settings/production.py). Applied live on 2026-11-26, see
+  # pfc-api Issues/010-aws-cost-rightsizing.md.
   condition {
-    path_pattern {
-      values = ["/*"]
+    host_header {
+      values = ["backend.thepfc.club", "api.thepfc.club", "thepfc.club"]
     }
   }
 
