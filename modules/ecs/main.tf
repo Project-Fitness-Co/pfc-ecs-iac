@@ -338,8 +338,11 @@ resource "aws_launch_template" "ecs-launch-template" {
     arn = aws_iam_instance_profile.ec2_instance_role_profile.arn
   }
 
+  # Basic (5-minute) EC2 metrics are enough; nothing uses the 1-minute
+  # detailed metrics, which cost about $2/instance/month. Turned off live on
+  # 2026-11-26 (launch template version 5 = version 3 with monitoring off).
   monitoring {
-    enabled = true
+    enabled = false
   }
   depends_on = [aws_ecs_cluster.pfc-cluster]
   tags = {
@@ -590,11 +593,25 @@ resource "aws_ecs_service" "django_service" {
     field = "attribute:ecs.availability-zone"
   }
 
+  # The GitHub deploy workflow in pfc-api registers a new task definition
+  # revision on every deploy. Without task_definition here, terraform apply
+  # would move the live service back to the revision Terraform last created
+  # (revision 41 as of 2026-11-26, live is 123 and newer).
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [desired_count, task_definition]
   }
 
   desired_count                     = 2
   health_check_grace_period_seconds = 60
-  depends_on                        = [aws_ecs_task_definition.django_task]
+
+  # Deploys never drop below 2 healthy tasks, and a deploy whose tasks keep
+  # failing rolls back on its own. Applied live on 2026-11-26.
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  depends_on = [aws_ecs_task_definition.django_task]
 }

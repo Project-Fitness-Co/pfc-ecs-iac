@@ -52,3 +52,40 @@ resource "aws_ecr_repository" "pfc_django" {
     scan_on_push = true
   }
 }
+
+# Keep the newest 30 production builds and remove untagged leftovers. CI pushes
+# each build as an image index whose image and attestation manifests are
+# untagged. A lifecycle preview on 2026-11-26 showed ECR keeps the untagged
+# parts of every kept build (including builds older than 14 days), so rule 2
+# only removes parts of builds that rule 1 has already expired. Applied live
+# on 2026-11-26 with the same text (aws ecr put-lifecycle-policy).
+resource "aws_ecr_lifecycle_policy" "pfc_django" {
+  repository = aws_ecr_repository.pfc_django.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep the newest 30 production builds (0.1.<run>), expire older ones"
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = ["0.1."]
+          countType     = "imageCountMoreThan"
+          countNumber   = 30
+        }
+        action = { type = "expire" }
+      },
+      {
+        rulePriority = 2
+        description  = "Expire untagged images older than 14 days"
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = 14
+        }
+        action = { type = "expire" }
+      }
+    ]
+  })
+}
